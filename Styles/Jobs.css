@@ -1372,6 +1372,9 @@ body.dark-mode .menu-item.active {
 .dropdown-avatar {
     width: 40px;
     height: 40px;
+    min-width: 40px;  /* Added to prevent shrinking */
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .avatar-initials {
@@ -1428,31 +1431,35 @@ body.dark-mode .menu-item.active {
 
 .user-info {
     display: flex;
-    align-items: center;
+    align-items: flex-start;  /* Changed from center to flex-start */
     gap: 1rem;
-}
-
-.dropdown-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
+    width: 100%;  /* Added to ensure proper width */
+    overflow: hidden;  /* Added to contain long content */
 }
 
 .user-details {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    min-width: 0;  /* Added to allow text truncation */
+    flex: 1;  /* Added to take remaining space */
 }
 
 #user-name {
     font-weight: 600;
     color: var(--light-text);
+    white-space: nowrap;  /* Added for consistent text handling */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #user-email {
     font-size: 0.875rem;
     color: var(--light-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .dark-mode #user-name {
