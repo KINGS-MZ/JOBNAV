@@ -701,7 +701,7 @@ function getInitials(name) {
 }
 
 // Function to update user profile UI
-function updateUserProfileUI(user) {
+async function updateUserProfileUI(user) {
     const userAvatar = document.getElementById('user-avatar');
     const dropdownAvatarImg = document.getElementById('dropdown-avatar-img');
     const avatarInitials = document.getElementById('avatar-initials');
@@ -715,15 +715,31 @@ function updateUserProfileUI(user) {
         userName.textContent = displayName;
         userEmail.textContent = user.email;
         
-        // Update avatar/initials
-        if (user.photoURL) {
-            userAvatar.src = user.photoURL;
-            dropdownAvatarImg.src = user.photoURL;
-            userAvatar.style.display = 'block';
-            dropdownAvatarImg.style.display = 'block';
-            avatarInitials.style.display = 'none';
-            dropdownInitials.style.display = 'none';
-        } else {
+        try {
+            // Fetch user profile from Firestore
+            const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+            
+            if (userDoc.exists && userDoc.data().photoURL) {
+                const profileImageUrl = userDoc.data().photoURL;
+                userAvatar.src = profileImageUrl;
+                dropdownAvatarImg.src = profileImageUrl;
+                userAvatar.style.display = 'block';
+                dropdownAvatarImg.style.display = 'block';
+                avatarInitials.style.display = 'none';
+                dropdownInitials.style.display = 'none';
+            } else {
+                // Fallback to initials if no profile image in Firestore
+                const initials = getInitials(displayName);
+                avatarInitials.textContent = initials;
+                dropdownInitials.textContent = initials;
+                userAvatar.style.display = 'none';
+                dropdownAvatarImg.style.display = 'none';
+                avatarInitials.style.display = 'block';
+                dropdownInitials.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            // Fallback to initials on error
             const initials = getInitials(displayName);
             avatarInitials.textContent = initials;
             dropdownInitials.textContent = initials;
@@ -740,6 +756,8 @@ function updateUserProfileUI(user) {
         dropdownAvatarImg.style.display = 'none';
         avatarInitials.style.display = 'block';
         dropdownInitials.style.display = 'block';
+        avatarInitials.textContent = 'JN';
+        dropdownInitials.textContent = 'JN';
     }
 }
 
@@ -790,7 +808,7 @@ function highlightCurrentPage() {
     
     menuItems.forEach(item => {
         const href = item.getAttribute('href').toLowerCase();
-        if (href === currentPage || (currentPage === '' && href === 'Home.html')) {
+        if (href === currentPage || (currentPage === '' && href === 'home.html')) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
@@ -943,9 +961,11 @@ function initializeTheme() {
 document.addEventListener('DOMContentLoaded', initializeTheme);
 
 // Function to update user profile UI
-function updateUserProfileUI(user) {
+async function updateUserProfileUI(user) {
     const userAvatar = document.getElementById('user-avatar');
-    const dropdownAvatar = document.querySelector('.dropdown-avatar');
+    const dropdownAvatarImg = document.getElementById('dropdown-avatar-img');
+    const avatarInitials = document.getElementById('avatar-initials');
+    const dropdownInitials = document.getElementById('dropdown-initials');
     const userName = document.getElementById('user-name');
     const userEmail = document.getElementById('user-email');
     
@@ -955,17 +975,49 @@ function updateUserProfileUI(user) {
         userName.textContent = displayName;
         userEmail.textContent = user.email;
         
-        // Update avatar if user has one
-        if (user.photoURL) {
-            userAvatar.src = user.photoURL;
-            dropdownAvatar.src = user.photoURL;
+        try {
+            // Fetch user profile from Firestore
+            const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+            
+            if (userDoc.exists && userDoc.data().photoURL) {
+                const profileImageUrl = userDoc.data().photoURL;
+                userAvatar.src = profileImageUrl;
+                dropdownAvatarImg.src = profileImageUrl;
+                userAvatar.style.display = 'block';
+                dropdownAvatarImg.style.display = 'block';
+                avatarInitials.style.display = 'none';
+                dropdownInitials.style.display = 'none';
+            } else {
+                // Fallback to initials if no profile image in Firestore
+                const initials = getInitials(displayName);
+                avatarInitials.textContent = initials;
+                dropdownInitials.textContent = initials;
+                userAvatar.style.display = 'none';
+                dropdownAvatarImg.style.display = 'none';
+                avatarInitials.style.display = 'block';
+                dropdownInitials.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            // Fallback to initials on error
+            const initials = getInitials(displayName);
+            avatarInitials.textContent = initials;
+            dropdownInitials.textContent = initials;
+            userAvatar.style.display = 'none';
+            dropdownAvatarImg.style.display = 'none';
+            avatarInitials.style.display = 'block';
+            dropdownInitials.style.display = 'block';
         }
     } else {
         // Reset to defaults for logged out state
         userName.textContent = 'Guest User';
         userEmail.textContent = 'guest@example.com';
-        userAvatar.src = '../Assets/default-avatar.png';
-        dropdownAvatar.src = '../Assets/default-avatar.png';
+        userAvatar.style.display = 'none';
+        dropdownAvatarImg.style.display = 'none';
+        avatarInitials.style.display = 'block';
+        dropdownInitials.style.display = 'block';
+        avatarInitials.textContent = 'JN';
+        dropdownInitials.textContent = 'JN';
     }
 }
 

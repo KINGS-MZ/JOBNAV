@@ -10,7 +10,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
+    <!-- Firebase Config -->
+    <script src="../Firebase/firebase-config.js"></script>
+    <script>
+        // Initialize theme before page load to prevent flash
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        document.documentElement.classList.add(isDark ? 'dark-mode' : 'light-mode');
+    </script>
 </head>
 <body class="light-mode">
     
@@ -27,29 +33,44 @@
                 </button>
                 
                 <div class="user-menu">
-                    <button id="user-menu-btn" class="user-btn" aria-label="User menu">
-                        <i class="fas fa-user"></i>
+                    <button id="user-menu-btn" class="user-btn" aria-label="User menu" type="button">
+                        <div class="user-avatar">
+                            <div class="avatar-initials" id="avatar-initials">JN</div>
+                            <img src="../Assets/default-avatar.png" alt="User avatar" id="user-avatar" style="display: none;">
+                        </div>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-menu" id="user-dropdown">
-                        <a href="#profile">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <div class="dropdown-avatar">
+                                    <div class="avatar-initials" id="dropdown-initials">JN</div>
+                                    <img src="../Assets/default-avatar.png" alt="User avatar" id="dropdown-avatar-img" style="display: none;">
+                                </div>
+                                <div class="user-details">
+                                    <span id="user-name">Guest User</span>
+                                    <span id="user-email">guest@example.com</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="Profile.html">
                             <i class="fas fa-user-circle"></i>
                             Profile
                         </a>
-                        <a href="#applications">
+                        <a href="Applications.html">
                             <i class="fas fa-briefcase"></i>
                             My Applications
                         </a>
-                        <a href="#saved">
+                        <a href="SavedJobs.html">
                             <i class="fas fa-heart"></i>
                             Saved Jobs
                         </a>
-                        <a href="#settings">
+                        <a href="Settings.html">
                             <i class="fas fa-cog"></i>
                             Settings
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a href="#logout" class="logout-link">
+                        <a href="#" id="logout-link" class="logout-link">
                             <i class="fas fa-sign-out-alt"></i>
                             Sign Out
                         </a>

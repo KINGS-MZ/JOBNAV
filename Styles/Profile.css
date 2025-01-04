@@ -1,3 +1,236 @@
+/* Import base styles */
+@import url('Home.css');
+
+/* Theme toggle button */
+#theme-toggle,
+.dark-mode #theme-toggle,
+body.dark-mode #theme-toggle,
+nav #theme-toggle,
+nav.dark-mode #theme-toggle {
+    background: none !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    border-color: transparent !important;
+    border-style: none !important;
+    border-width: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    margin-right: 0.25rem !important;
+    margin-left: 0.25rem !important;
+    outline: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    cursor: pointer;
+    font-size: 0.85rem;
+    width: 21px;
+    height: 21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Adjust spacing in the nav container */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem !important;
+}
+
+/* Remove any hover/focus effects */
+#theme-toggle:hover,
+#theme-toggle:focus,
+#theme-toggle:active,
+.dark-mode #theme-toggle:hover,
+.dark-mode #theme-toggle:focus,
+.dark-mode #theme-toggle:active,
+body.dark-mode #theme-toggle:hover,
+body.dark-mode #theme-toggle:focus,
+body.dark-mode #theme-toggle:active {
+    background: none !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    border-color: transparent !important;
+    border-style: none !important;
+    border-width: 0 !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+/* Ensure icon inherits color */
+#theme-toggle i,
+.dark-mode #theme-toggle i,
+body.dark-mode #theme-toggle i {
+    pointer-events: none;
+    color: inherit !important;
+}
+
+/* Dropdown menu width */
+.dropdown-menu,
+nav .dropdown-menu {
+    width: 230px !important;
+    min-width: 230px !important;
+    max-width: 230px !important;
+    background-color: var(--light-bg);
+    border: 1px solid var(--light-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: var(--dark-bg);
+    border-color: var(--dark-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2),
+                0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu .dropdown-header {
+    padding: 0.75rem 0.5rem;
+    padding-left: 0.3rem;
+    border-bottom: 1px solid var(--light-border);
+}
+
+body.dark-mode .dropdown-menu .dropdown-header {
+    border-bottom-color: var(--dark-border);
+}
+
+.dropdown-menu .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0;
+    padding-left: 0.3rem;
+}
+
+.dropdown-menu .dropdown-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-hover);
+    flex-shrink: 0;
+    margin: 0;
+}
+
+body.dark-mode .dropdown-menu .dropdown-avatar {
+    background-color: var(--dark-hover);
+}
+
+.dropdown-menu .dropdown-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dropdown-menu .avatar-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--primary-blue);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.dropdown-menu .user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+    margin: 0;
+}
+
+.dropdown-menu .user-details span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown-menu .user-details span:first-child {
+    font-weight: 600;
+    color: var(--light-text);
+}
+
+.dropdown-menu .user-details span:last-child {
+    font-size: 0.875rem;
+    color: var(--light-secondary);
+}
+
+body.dark-mode .dropdown-menu .user-details span:first-child {
+    color: var(--dark-text);
+}
+
+body.dark-mode .dropdown-menu .user-details span:last-child {
+    color: var(--dark-secondary);
+}
+
+.dropdown-menu a {
+    color: var(--light-text);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu a i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+body.dark-mode .dropdown-menu a {
+    color: var(--dark-text);
+}
+
+body.light-mode .dropdown-menu a:hover {
+    background-color: var(--light-hover);
+}
+
+body.dark-mode .dropdown-menu a:hover {
+    background-color: var(--dark-hover);
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: var(--light-border);
+    margin: 0.5rem 0;
+}
+
+body.dark-mode .dropdown-divider {
+    background-color: var(--dark-border);
+}
+
+.dropdown-menu .logout-link {
+    color: #ef4444 !important;
+}
+
+body.dark-mode .dropdown-menu .logout-link {
+    color: #f87171 !important;
+}
+
 /* Profile Page Styles */
 .profile-container {
     max-width: 1200px;
@@ -8,15 +241,16 @@
 /* Profile Header */
 .profile-header {
     background-color: var(--light-bg);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--light-border);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px var(--shadow-light);
     margin-bottom: 24px;
     overflow: hidden;
 }
 
 .profile-cover {
     height: 200px;
-    background: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
+    background: linear-gradient(45deg, var(--primary-blue), #60a5fa);
 }
 
 .profile-info {
@@ -26,6 +260,7 @@
     display: flex;
     align-items: flex-end;
     gap: 24px;
+    color: var(--primary-text);
 }
 
 .profile-picture {
@@ -40,41 +275,22 @@
     border-radius: 50%;
     border: 4px solid var(--light-bg);
     object-fit: cover;
-}
-
-.edit-photo-btn {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.edit-photo-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .edit-photo-btn {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    background: var(--primary-blue);
-    color: white;
+    background-color: var(--primary-blue);
+    color: #ffffff;
     border: none;
     border-radius: 50%;
     width: 36px;
     height: 36px;
     cursor: pointer;
     transition: transform 0.2s;
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .edit-photo-btn:hover {
@@ -89,41 +305,280 @@
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 8px;
+    color: var(--primary-text);
 }
 
 .profile-headline {
-    color: var(--primary-gray);
+    color: var(--secondary-text);
     margin-bottom: 8px;
+    font-size: 16px;
 }
 
 .profile-location {
-    color: var(--primary-gray);
+    color: var(--secondary-text);
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.profile-location i {
-    margin-right: 6px;
+/* Profile Sections */
+.profile-section {
+    background-color: var(--light-bg);
+    border: 1px solid var(--light-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
-.edit-profile-btn {
+/* Section Titles */
+.profile-section h2,
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--primary-text);
+}
+
+.dark-mode .profile-section h2,
+.dark-mode .section-title {
+    color: var(--dark-text);
+}
+
+/* Profile Completion Section */
+.completion-status h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--primary-text);
+}
+
+.dark-mode .completion-status h2 {
+    color: var(--dark-text);
+}
+
+/* Experience & Education Titles */
+.experience-title,
+.education-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary-text);
+}
+
+.dark-mode .experience-title,
+.dark-mode .education-title {
+    color: var(--dark-text);
+}
+
+/* Experience & Education */
+.experience-item,
+.education-item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--light-border);
+}
+
+.experience-item:last-child,
+.education-item:last-child {
+    border-bottom: none;
+}
+
+.experience-title,
+.education-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary-text);
+}
+
+.experience-company,
+.education-school {
+    color: var(--secondary-text);
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.experience-date,
+.education-date {
+    color: var(--secondary-text);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.experience-description,
+.education-description {
+    color: var(--primary-text);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Skills Section */
+.skills-container,
+#skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.skill-tag,
+.skills-container .skill-tag,
+#skills-container .skill-tag {
+    background-color: var(--primary-green) !important;
+    color: white !important;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skill-tag:hover,
+.skills-container .skill-tag:hover,
+#skills-container .skill-tag:hover {
+    background-color: #15803d !important;  /* Darker green on hover */
+}
+
+.dark-mode .skill-tag,
+.dark-mode .skills-container .skill-tag,
+.dark-mode #skills-container .skill-tag {
+    background-color: var(--primary-green) !important;
+    color: white !important;
+}
+
+.dark-mode .skill-tag:hover,
+.dark-mode .skills-container .skill-tag:hover,
+.dark-mode #skills-container .skill-tag:hover {
+    background-color: #15803d !important;
+}
+
+/* Remove any conflicting styles */
+.skill-tag[style],
+#skills-container .skill-tag[style] {
+    background-color: var(--primary-green) !important;
+    color: white !important;
+}
+
+/* Buttons */
+.edit-profile-btn,
+.add-experience-btn,
+.add-education-btn,
+.add-skill-btn {
+    background-color: var(--light-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--light-border);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.edit-profile-btn:hover,
+.add-experience-btn:hover,
+.add-education-btn:hover,
+.add-skill-btn:hover {
+    background-color: var(--tag-bg);
+}
+
+/* Input Fields */
+#skill-input {
+    background-color: var(--light-bg);
+    border: 1px solid var(--light-border);
+    color: var(--primary-text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 300px;
+}
+
+#skill-input::placeholder {
+    color: var(--secondary-text);
+}
+
+/* Floating Menu */
+.floating-menu {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+}
+
+.floating-menu .menu-btn {
+    background-color: var(--light-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--light-border);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px var(--shadow-light);
+    transition: transform 0.2s;
+}
+
+.floating-menu .menu-btn:hover {
+    transform: scale(1.1);
+}
+
+.floating-menu .menu-items {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background-color: var(--light-bg);
+    border: 1px solid var(--light-border);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 2px 4px var(--shadow-light);
+    display: none;
+}
+
+.floating-menu .menu-items.active {
+    display: block;
+}
+
+.floating-menu .menu-item {
+    color: var(--primary-text);
     padding: 8px 16px;
-    background: var(--primary-blue);
-    color: white;
-    border: none;
-    border-radius: 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     cursor: pointer;
     transition: background-color 0.2s;
+    white-space: nowrap;
 }
 
-.edit-profile-btn:hover {
-    background: var(--primary-green);
+.floating-menu .menu-item:hover {
+    background-color: var(--tag-bg);
 }
 
-.edit-profile-btn.saving {
-    background: var(--primary-green);
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--light-bg);
+    color: var(--primary-text);
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-light);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--light-border);
 }
 
 /* Edit mode styles */
@@ -199,7 +654,7 @@
 .profile-section h2 {
     font-size: 20px;
     margin-bottom: 16px;
-    color: var(--light-text);
+    color: var(--primary-text);
 }
 
 /* Experience & Education Items */
@@ -217,7 +672,7 @@
 }
 
 .date {
-    color: var(--primary-gray);
+    color: var(--secondary-text);
     font-size: 14px;
 }
 
@@ -506,14 +961,82 @@ nav {
 }
 
 .logo-text {
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.025em !important;
+    color: var(--primary-text) !important;
+}
+
+.dark-mode .logo-text {
+    color: var(--dark-text) !important;
 }
 
 .nav-right {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+/* Navigation Overrides for Profile Page */
+nav {
+    padding: 0.5rem 2rem !important;
+}
+
+.nav-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 48px !important;
+}
+
+.logo {
+    margin-left: -0.5rem !important;
+    gap: 0.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.logo-text {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.025em !important;
+    color: var(--primary-text) !important;
+}
+
+.dark-mode .logo-text {
+    color: var(--dark-text) !important;
+}
+
+.nav-right {
+    margin-left: auto !important;
+    padding-right: 0 !important;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    nav {
+        padding: 0.5rem 1rem !important;
+    }
+
+    .logo {
+        margin-left: 0.5rem !important;  /* Increased right margin for mobile */
+    }
+
+    .nav-right {
+        padding-right: 0.5rem !important;
+    }
+}
+
+/* Small Mobile Adjustments */
+@media (max-width: 480px) {
+    nav {
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    .logo {
+        margin-left: 0.75rem !important;  /* Even more margin for small screens */
+    }
 }
 
 /* User Menu Styles */
@@ -715,6 +1238,108 @@ nav {
     color: var(--dark-text);
 }
 
+.dark-mode .profile-header {
+    background-color: var(--dark-secondary-bg);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-mode .profile-info {
+    color: var(--dark-text);
+}
+
+.dark-mode .profile-name,
+.dark-mode .profile-headline,
+.dark-mode .profile-location,
+.dark-mode .about-text,
+.dark-mode .section-title,
+.dark-mode .experience-title,
+.dark-mode .education-title,
+.dark-mode .skill-tag {
+    color: var(--dark-text);
+}
+
+.dark-mode .profile-section {
+    background-color: var(--dark-secondary-bg);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-mode .edit-profile-btn,
+.dark-mode .add-experience-btn,
+.dark-mode .add-education-btn,
+.dark-mode .add-skill-btn {
+    background-color: var(--dark-secondary-bg);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-mode .edit-profile-btn:hover,
+.dark-mode .add-experience-btn:hover,
+.dark-mode .add-education-btn:hover,
+.dark-mode .add-skill-btn:hover {
+    background-color: var(--dark-bg);
+}
+
+.dark-mode .skill-tag {
+    background-color: var(--dark-secondary-bg);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-mode .skill-tag:hover {
+    background-color: var(--dark-bg);
+}
+
+.dark-mode .experience-item,
+.dark-mode .education-item {
+    border-color: var(--dark-border);
+}
+
+.dark-mode .experience-date,
+.dark-mode .education-date,
+.dark-mode .experience-company,
+.dark-mode .education-school {
+    color: var(--dark-secondary);
+}
+
+.dark-mode .experience-description,
+.dark-mode .education-description {
+    color: var(--dark-text);
+}
+
+.dark-mode #skill-input {
+    background-color: var(--dark-secondary-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
+}
+
+.dark-mode #skill-input::placeholder {
+    color: var(--dark-secondary);
+}
+
+.dark-mode .floating-menu .menu-btn {
+    background-color: var(--dark-secondary-bg);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-mode .floating-menu .menu-items {
+    background-color: var(--dark-secondary-bg);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-mode .floating-menu .menu-item {
+    color: var(--dark-text);
+}
+
+.dark-mode .floating-menu .menu-item:hover {
+    background-color: var(--dark-bg);
+}
+
+.dark-mode .notification {
+    background-color: var(--dark-secondary-bg);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-border);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .profile-content {
@@ -729,12 +1354,6 @@ nav {
 
     .profile-picture {
         margin-top: -90px;
-    }
-
-    .edit-profile-btn {
-        margin-top: 16px;
-    }
-}
     }
 
     .edit-profile-btn {

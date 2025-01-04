@@ -1,13 +1,3 @@
-// Initialize Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBxAoXoqZDHMDxj6mgB9WKm3F8GZZRdXBM",
-    authDomain: "job-navigator-e3f4d.firebaseapp.com",
-    projectId: "job-navigator-e3f4d",
-    storageBucket: "job-navigator-e3f4d.appspot.com",
-    messagingSenderId: "1080465769723",
-    appId: "1:1080465769723:web:5e0e4f9c5a0a5a0a0a0a0a"
-};
-
 // Initialize Firebase if not already initialized
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -23,92 +13,132 @@ const fromPage = urlParams.get('from');
 // Keep track of redirections
 let hasRedirected = false;
 
-// Initialize UI Elements
-initializeUI();
+// Function to get initials from a name
+function getInitials(name) {
+    if (!name) return 'JN';
+    return name
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+}
 
-// Handle auth state changes
-auth.onAuthStateChanged(async (user) => {
+// Function to update user profile UI
+async function updateUserUI(user) {
+    const userAvatar = document.getElementById('user-avatar');
+    const dropdownAvatarImg = document.getElementById('dropdown-avatar-img');
+    const avatarInitials = document.getElementById('avatar-initials');
+    const dropdownInitials = document.getElementById('dropdown-initials');
+    const userName = document.getElementById('user-name');
+    const userEmail = document.getElementById('user-email');
+    
     if (user) {
+        // Update user info
+        const displayName = user.displayName || 'User';
+        userName.textContent = displayName;
+        userEmail.textContent = user.email;
+        
         try {
-            // Check if user has completed profile setup
+            // Fetch user profile from Firestore
             const userDoc = await db.collection('users').doc(user.uid).get();
-            if (!userDoc.exists || !userDoc.data().profileCompleted) {
-                console.log('Profile incomplete, redirecting to setup');
-                window.location.href = 'setup-profile.html?from=home';
+            
+            if (userDoc.exists && userDoc.data().photoURL) {
+                const profileImageUrl = userDoc.data().photoURL;
+                userAvatar.src = profileImageUrl;
+                dropdownAvatarImg.src = profileImageUrl;
+                userAvatar.style.display = 'block';
+                dropdownAvatarImg.style.display = 'block';
+                avatarInitials.style.display = 'none';
+                dropdownInitials.style.display = 'none';
             } else {
-                // User is authenticated and has completed profile
-                console.log('User authenticated and profile complete');
-                updateUserUI(user, userDoc.data());
+                // Fallback to initials if no profile image
+                const initials = getInitials(displayName);
+                avatarInitials.textContent = initials;
+                dropdownInitials.textContent = initials;
+                userAvatar.style.display = 'none';
+                dropdownAvatarImg.style.display = 'none';
+                avatarInitials.style.display = 'block';
+                dropdownInitials.style.display = 'block';
             }
         } catch (error) {
-            console.error('Error checking profile:', error);
-            window.location.href = 'setup-profile.html?from=home';
+            console.error('Error fetching user profile:', error);
+            // Fallback to initials on error
+            const initials = getInitials(displayName);
+            avatarInitials.textContent = initials;
+            dropdownInitials.textContent = initials;
+            userAvatar.style.display = 'none';
+            dropdownAvatarImg.style.display = 'none';
+            avatarInitials.style.display = 'block';
+            dropdownInitials.style.display = 'block';
         }
-    } else if (!user && !hasRedirected && fromPage !== 'auth') {
-        // Only redirect to auth if we didn't come from there
-        hasRedirected = true;
-        console.log('No user signed in, redirecting to auth');
-        window.location.href = '../Auth/auth.html?from=home';
-    }
-});
-
-// Update user-specific UI elements
-function updateUserUI(user, userData) {
-    const userBtn = document.querySelector('.user-btn');
-    if (userData.photoURL) {
-        userBtn.innerHTML = `
-            <img src="${userData.photoURL}" alt="Profile" class="user-avatar">
-            <i class="fas fa-chevron-down"></i>
-        `;
+    } else {
+        // Reset to defaults for logged out state
+        userName.textContent = 'Guest User';
+        userEmail.textContent = 'guest@example.com';
+        userAvatar.style.display = 'none';
+        dropdownAvatarImg.style.display = 'none';
+        avatarInitials.style.display = 'block';
+        dropdownInitials.style.display = 'block';
+        avatarInitials.textContent = 'JN';
+        dropdownInitials.textContent = 'JN';
     }
 }
 
-// Initialize all UI elements and event listeners
+// Function to handle logout
+async function handleLogout() {
+    try {
+        await auth.signOut();
+        window.location.href = '../Auth/auth.html?from=home';
+    } catch (error) {
+        console.error('Error signing out:', error);
+        alert('Error signing out. Please try again.');
+    }
+}
+
+// Function to initialize UI elements and event listeners
 function initializeUI() {
-    // Theme Toggle
+    // Theme toggle functionality
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = themeToggle.querySelector('i');
-    const body = document.body;
-
-    function applyTheme(isDark) {
-        if (isDark) {
-            body.classList.remove('light-mode');
-            body.classList.add('dark-mode');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-        } else {
-            body.classList.remove('dark-mode');
-            body.classList.add('light-mode');
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-        }
+    
+    function setTheme(isDark) {
+        document.body.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('light-mode', !isDark);
+        themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('darkMode', isDark);
     }
-
+    
+    themeToggle.addEventListener('click', () => {
+        const isDark = !document.body.classList.contains('dark-mode');
+        setTheme(isDark);
+    });
+    
     // Initialize theme
     const isDark = localStorage.getItem('darkMode') === 'true';
-    applyTheme(isDark);
-
-    // Theme toggle click handler
-    themeToggle.addEventListener('click', () => {
-        const isDark = !body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDark);
-        applyTheme(isDark);
-    });
-
-    // User Menu
+    setTheme(isDark);
+    
+    // User menu functionality
     const userMenuBtn = document.getElementById('user-menu-btn');
     const userDropdown = document.getElementById('user-dropdown');
-
-    if (userMenuBtn && userDropdown) {
-        userMenuBtn.addEventListener('click', () => {
-            userDropdown.classList.toggle('active');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (event) => {
-            if (!userMenuBtn.contains(event.target) && !userDropdown.contains(event.target)) {
-                userDropdown.classList.remove('active');
-            }
+    
+    userMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('active');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+            userDropdown.classList.remove('active');
+        }
+    });
+    
+    // Logout functionality
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
         });
     }
 
@@ -124,8 +154,8 @@ function initializeUI() {
         event.preventDefault();
         
         // Get the search values
-        const jobQuery = jobSearch.value.trim();
-        const locationQuery = locationSearch.value.trim();
+        const jobQuery = jobSearch ? jobSearch.value.trim() : '';
+        const locationQuery = locationSearch ? locationSearch.value.trim() : '';
         const experience = experienceLevel ? experienceLevel.value : '';
         const type = jobType ? jobType.value : '';
         const salary = salaryRange ? salaryRange.value : '';
@@ -177,14 +207,15 @@ function initializeUI() {
     const menuItems = document.querySelector('.menu-items');
 
     if (menuBtn && menuItems) {
-        menuBtn.addEventListener('click', () => {
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             menuItems.classList.toggle('active');
             menuBtn.classList.toggle('active');
         });
 
         // Close menu when clicking outside
         document.addEventListener('click', (event) => {
-            if (!event.target.closest('.floating-menu')) {
+            if (!floatingMenu.contains(event.target)) {
                 menuItems.classList.remove('active');
                 menuBtn.classList.remove('active');
             }
@@ -205,7 +236,7 @@ function initializeUI() {
         
         menuLinks.forEach(link => {
             const linkHref = link.getAttribute('href').toLowerCase();
-            if (linkHref.includes(pageName) || (pageName === '' && linkHref.includes('Home.html'))) {
+            if (linkHref.includes(pageName) || (pageName === '' && linkHref.includes('home.html'))) {
                 link.classList.add('active');
             }
         });
@@ -221,18 +252,33 @@ function initializeUI() {
             }
         });
     }
-
-    // Sign out handler
-    const signOutLink = document.querySelector('.logout-link');
-    if (signOutLink) {
-        signOutLink.addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await auth.signOut();
-                window.location.href = '../Auth/auth.html?from=home';
-            } catch (error) {
-                console.error('Error signing out:', error);
-            }
-        });
-    }
 }
+
+// Handle auth state changes
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        try {
+            // Check if user has completed profile setup
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.exists || !userDoc.data().profileCompleted) {
+                console.log('Profile incomplete, redirecting to setup');
+                window.location.href = 'setup-profile.html?from=home';
+            } else {
+                // User is authenticated and has completed profile
+                console.log('User authenticated and profile complete');
+                updateUserUI(user);
+            }
+        } catch (error) {
+            console.error('Error checking profile:', error);
+            window.location.href = 'setup-profile.html?from=home';
+        }
+    } else if (!user && !hasRedirected && fromPage !== 'auth') {
+        // Only redirect to auth if we didn't come from there
+        hasRedirected = true;
+        console.log('No user signed in, redirecting to auth');
+        window.location.href = '../Auth/auth.html?from=home';
+    }
+});
+
+// Initialize UI Elements
+initializeUI();
