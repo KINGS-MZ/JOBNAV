@@ -187,7 +187,7 @@ setupProfileForm.addEventListener('submit', async (event) => {
         ]);
 
         // Redirect to home page
-        window.location.href = 'home.html?from=setup-profile';
+        window.location.href = 'Home.html?from=setup-profile';
         
     } catch (error) {
         console.error('Error saving profile:', error);
