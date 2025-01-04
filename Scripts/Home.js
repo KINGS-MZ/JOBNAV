@@ -205,7 +205,7 @@ function initializeUI() {
         
         menuLinks.forEach(link => {
             const linkHref = link.getAttribute('href').toLowerCase();
-            if (linkHref.includes(pageName) || (pageName === '' && linkHref.includes('home.html'))) {
+            if (linkHref.includes(pageName) || (pageName === '' && linkHref.includes('Home.html'))) {
                 link.classList.add('active');
             }
         });

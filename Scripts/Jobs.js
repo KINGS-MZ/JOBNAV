@@ -790,7 +790,7 @@ function highlightCurrentPage() {
     
     menuItems.forEach(item => {
         const href = item.getAttribute('href').toLowerCase();
-        if (href === currentPage || (currentPage === '' && href === 'home.html')) {
+        if (href === currentPage || (currentPage === '' && href === 'Home.html')) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
