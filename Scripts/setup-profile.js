@@ -26,7 +26,7 @@ auth.onAuthStateChanged(async (user) => {
     const userDoc = await db.collection('users').doc(user.uid).get();
     if (userDoc.exists && userDoc.data().profileCompleted) {
         // Redirect to home if profile is already set up
-        window.location.href = 'home.html';
+        window.location.href = 'Home.html';
         return;
     }
 
@@ -187,7 +187,7 @@ setupProfileForm.addEventListener('submit', async (event) => {
         ]);
 
         // Redirect to home page
-        window.location.href = 'home.html?from=setup-profile';
+        window.location.href = 'Home.html?from=setup-profile';
         
     } catch (error) {
         console.error('Error saving profile:', error);
