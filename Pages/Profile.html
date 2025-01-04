@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Job Navigator</title>
+    <link rel="stylesheet" href="../Styles/Home.css">
+    <link rel="stylesheet" href="../Styles/Profile.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Config and Auth Guard -->
+    <script src="../Firebase/firebase-config.js"></script>
+    <script src="../Scripts/authGuard.js"></script>
+    
+    <script>
+        // Initialize theme before page load to prevent flash
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        document.documentElement.classList.add(isDark ? 'dark-mode' : 'light-mode');
+    </script>
+</head>
+<body class="light-mode">
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">JN</span>
+                <span class="logo-text">Job Navigator</span>
+            </div>
+            
+            <div class="nav-right">
+                <button id="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                
+                <div class="user-menu">
+                    <button id="user-menu-btn" class="user-btn" aria-label="User menu">
+                        <i class="fas fa-user"></i>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="user-dropdown">
+                        <a href="#profile">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </a>
+                        <a href="#applications">
+                            <i class="fas fa-briefcase"></i>
+                            My Applications
+                        </a>
+                        <a href="#saved">
+                            <i class="fas fa-heart"></i>
+                            Saved Jobs
+                        </a>
+                        <a href="#settings">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#logout" class="logout-link">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <!-- Profile Header Section -->
+        <section class="profile-header">
+            <div class="profile-cover"></div>
+            <div class="profile-info">
+                <div class="profile-picture">
+                    <img src="" alt="Profile Picture" id="profile-pic">
+                    <button class="edit-photo-btn"><i class="fas fa-camera"></i></button>
+                </div>
+                <div class="profile-details">
+                    <h1 class="profile-name" contenteditable="false"></h1>
+                    <p class="profile-headline" contenteditable="false"></p>
+                    <p class="profile-location" contenteditable="false"><i class="fas fa-map-marker-alt"></i></p>
+                </div>
+                <button class="edit-profile-btn"><i class="fas fa-edit"></i> Edit Profile</button>
+            </div>
+        </section>
+
+        <!-- Main Profile Content -->
+        <div class="profile-content">
+            <!-- Left Column -->
+            <div class="profile-main">
+                <!-- About Section -->
+                <section class="profile-section">
+                    <h2>About</h2>
+                    <p class="about-text" contenteditable="false"></p>
+                </section>
+
+                <!-- Experience Section -->
+                <section class="profile-section" id="experience-section">
+                    <h2>Experience</h2>
+                    <div class="experience-list">
+                        <!-- Experience items will be dynamically added here -->
+                    </div>
+                    <button class="add-item-btn" data-type="experience" style="display: none;">
+                        <i class="fas fa-plus"></i> Add Experience
+                    </button>
+                </section>
+
+                <!-- Education Section -->
+                <section class="profile-section" id="education-section">
+                    <h2>Education</h2>
+                    <div class="education-list">
+                        <!-- Education items will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Skills Section -->
+                <section class="profile-section">
+                    <h2>Skills</h2>
+                    <div id="skills-container">
+                        <!-- Skills will be populated by JavaScript -->
+                    </div>
+                    <div class="add-skill-container" style="display: none;">
+                        <input type="text" id="skill-input" placeholder="Add a skill">
+                        <button class="add-skill-btn">Add</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column -->
+            <div class="profile-sidebar">
+                <!-- Saved Jobs Section -->
+                <section class="profile-section saved-jobs">
+                    <h2>Saved Jobs</h2>
+                    <div class="saved-jobs-list">
+                        <div class="saved-job-item">
+                            <h4>Frontend Developer</h4>
+                            <p>TechStart Morocco</p>
+                            <span class="job-location">Rabat</span>
+                            <button class="view-job-btn">View Job</button>
+                        </div>
+                        <div class="saved-job-item">
+                            <h4>Web Developer</h4>
+                            <p>Digital Solutions</p>
+                            <span class="job-location">Casablanca</span>
+                            <button class="view-job-btn">View Job</button>
+                        </div>
+                    </div>
+                    <a href="#" class="view-all-link">View All Saved Jobs</a>
+                </section>
+
+                <!-- Profile Completion -->
+                <section class="profile-section completion-status">
+                    <h2>Profile Completion</h2>
+                    <div class="completion-bar">
+                        <div class="completion-progress" style="width: 85%"></div>
+                    </div>
+                    <p>85% Complete</p>
+                    <ul class="completion-tasks">
+                        <li><i class="fas fa-check"></i> Add profile picture</li>
+                        <li><i class="fas fa-check"></i> Add work experience</li>
+                        <li><i class="fas fa-times"></i> Add portfolio links</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div class="floating-menu">
+        <button class="menu-btn main-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu-items">
+            <a href="Home.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                Home
+            </a>
+            <a href="Posts.html" class="menu-item">
+                <i class="fas fa-briefcase"></i>
+                Jobs
+            </a>
+            <a href="Profile.html" class="menu-item">
+                <i class="fas fa-user"></i>
+                Profile
+            </a>
+            <a href="#settings" class="menu-item">
+                <i class="fas fa-cog"></i>
+                Settings
+            </a>
+        </div>
+    </div>
+
+    <script src="../Scripts/profile.js"></script>
+</body>
+</html>

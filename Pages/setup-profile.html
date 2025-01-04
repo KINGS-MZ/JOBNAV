@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Profile - Job Navigator</title>
+    <link rel="stylesheet" href="../Styles/setup-profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="../Firebase/firebase-config.js"></script>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-header">
+            <img src="../Images/logo.png" alt="Job Navigator Logo" class="logo">
+            <h1>Complete Your Profile</h1>
+            <p>Help us personalize your job search experience</p>
+        </div>
+
+        <form id="setupProfileForm" class="setup-form">
+            <div class="form-section profile-photo-section">
+                <div class="profile-photo-container">
+                    <div class="profile-photo">
+                        <img id="profilePicPreview" src="../Images/default-avatar.png" alt="Profile Picture">
+                        <div class="photo-overlay">
+                            <button type="button" id="uploadPhotoBtn" class="upload-btn">
+                                <i class="fas fa-camera"></i>
+                                <span>Change Photo</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Personal Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" required placeholder="Enter your first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" required placeholder="Enter your last name">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="headline">Professional Headline</label>
+                        <input type="text" id="headline" required placeholder="e.g., Senior Software Engineer">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" required placeholder="e.g., New York, NY">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>About Me</h2>
+                <div class="form-group">
+                    <textarea id="about" rows="4" required placeholder="Tell us about yourself, your experience, and what you're looking for"></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Education</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="degree">Degree</label>
+                        <input type="text" id="degree" required placeholder="e.g., Bachelor of Science">
+                    </div>
+                    <div class="form-group">
+                        <label for="institution">Institution</label>
+                        <input type="text" id="institution" required placeholder="e.g., University of California">
+                    </div>
+                    <div class="form-group">
+                        <label for="educationStart">Start Date</label>
+                        <input type="month" id="educationStart" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="educationEnd">End Date</label>
+                        <input type="month" id="educationEnd" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Skills</h2>
+                <div class="skills-container">
+                    <div class="skills-input">
+                        <input type="text" id="skillInput" placeholder="Add a skill (e.g., JavaScript)">
+                        <button type="button" id="addSkillBtn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="skillsTags" class="skills-tags"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-check"></i>
+                Complete Setup
+            </button>
+        </form>
+    </div>
+
+    <div class="progress-indicator">
+        <div class="progress-step completed">
+            <i class="fas fa-user-check"></i>
+            <span>Account Created</span>
+        </div>
+        <div class="progress-step active">
+            <i class="fas fa-id-card"></i>
+            <span>Profile Setup</span>
+        </div>
+        <div class="progress-step">
+            <i class="fas fa-briefcase"></i>
+            <span>Start Job Search</span>
+        </div>
+    </div>
+
+    <script src="../Scripts/setup-profile.js"></script>
+</body>
+</html>

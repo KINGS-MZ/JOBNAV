@@ -1,9 +1,19 @@
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 // Set persistence to LOCAL (survives browser restart)
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log('Persistence set to LOCAL');
+    })
+    .catch((error) => {
+        console.error('Error setting persistence:', error);
+    });
 
 // Function to show toast and redirect
 function showToastAndRedirect(user) {
@@ -11,43 +21,63 @@ function showToastAndRedirect(user) {
     const toast = document.querySelector('.toast-notification');
     const userInfo = document.querySelector('.toast-user');
     
-    // Update user info in toast
-    userInfo.textContent = `Signed in as ${user.email}`;
-    
-    // Show overlay and toast
-    overlay.style.display = 'block';
-    toast.style.display = 'block';
-    
-    // Redirect after 2 seconds
-    setTimeout(() => {
-        window.location.href = '../Pages/Home.html';
-    }, 2000);
+    if (overlay && toast && userInfo) {
+        // Update user info in toast
+        userInfo.textContent = `Signed in as ${user.email}`;
+        
+        // Show overlay and toast
+        overlay.style.display = 'block';
+        toast.style.display = 'block';
+        
+        // Redirect after 2 seconds
+        setTimeout(() => {
+            window.location.href = '../Pages/setup-profile.html?from=auth';
+        }, 2000);
+    } else {
+        // If toast elements not found, redirect immediately
+        window.location.href = '../Pages/setup-profile.html?from=auth';
+    }
 }
 
+// Keep track of redirections
+let hasRedirected = false;
+
 // Check if user is already signed in
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(async (user) => {
+    console.log('Auth state changed:', user ? 'User is signed in' : 'User is signed out');
+    
     if (user) {
-        // User is signed in
-        console.log('User is signed in:', user.email);
         // Save user data to localStorage
         localStorage.setItem('user', JSON.stringify({
             email: user.email,
             displayName: user.displayName,
             uid: user.uid
         }));
-        
-        // If we're on the auth page, show toast and redirect
-        if (window.location.pathname.includes('auth.html')) {
-            showToastAndRedirect(user);
+
+        // Only redirect if we're on the auth page
+        if (!hasRedirected && window.location.pathname.includes('auth.html')) {
+            hasRedirected = true;
+            console.log('User is signed in:', user.email);
+
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().profileCompleted) {
+                    console.log('Profile complete, redirecting to home');
+                    window.location.href = '../Pages/Home.html?from=auth';
+                } else {
+                    console.log('Profile incomplete, redirecting to setup');
+                    window.location.href = '../Pages/setup-profile.html?from=auth';
+                }
+            } catch (error) {
+                console.error('Error checking profile:', error);
+                window.location.href = '../Pages/setup-profile.html?from=auth';
+            }
         }
     } else {
         // User is signed out
         console.log('User is signed out');
         localStorage.removeItem('user');
-        // If we're not on the auth page and user is not signed in, redirect to auth
-        if (!window.location.pathname.includes('auth.html') && !window.location.pathname.includes('index.html')) {
-            window.location.href = '../Auth/auth.html';
-        }
+        hasRedirected = false;
     }
 });
 
@@ -132,14 +162,24 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Create user
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
             
             // Update profile with full name
-            await userCredential.user.updateProfile({
+            await user.updateProfile({
                 displayName: fullName
             });
 
+            // Initialize Firestore document for user
+            await db.collection('users').doc(user.uid).set({
+                email: email,
+                displayName: fullName,
+                uid: user.uid,
+                profileCompleted: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
             console.log('Account created successfully!');
-            // Redirect happens automatically via onAuthStateChanged
+            showToastAndRedirect(user);
         } catch (error) {
             showError(error.message);
         }
@@ -151,8 +191,27 @@ document.addEventListener('DOMContentLoaded', function() {
         googleBtn.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                await auth.signInWithPopup(provider);
-                // Redirect happens automatically via onAuthStateChanged
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                // Check if this is a new user
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (!userDoc.exists) {
+                    // Initialize Firestore document for new Google user
+                    await db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        displayName: user.displayName,
+                        uid: user.uid,
+                        profileCompleted: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showToastAndRedirect(user);
+                } else if (!userDoc.data().profileCompleted) {
+                    window.location.href = '../Pages/setup-profile.html?from=auth';
+                } else {
+                    window.location.href = '../Pages/Home.html?from=auth';
+                }
             } catch (error) {
                 showError(error.message);
             }

@@ -1,3 +1,8 @@
+// Initialize Firebase if not already initialized
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
 // DOM Elements
 const jobsList = document.querySelector('.jobs-list');
 const searchInput = document.getElementById('search-input');
@@ -15,6 +20,13 @@ const filterCloseBtn = document.querySelector('.filters-close-btn');
 // Store all jobs for filtering
 let allJobs = [];
 let isInitialized = false;
+
+// Check if we came from another page
+const urlParams = new URLSearchParams(window.location.search);
+const fromPage = urlParams.get('from');
+
+// Keep track of redirections
+let hasRedirected = false;
 
 // Create a function to get the no jobs Lottie HTML
 function getNoJobsLottie(message) {
@@ -94,6 +106,100 @@ function formatDate(timestamp) {
     if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
     return `${Math.floor(diffDays / 365)} years ago`;
 }
+
+// Function to initialize the page
+async function initializePage() {
+    try {
+        const jobs = await fetchJobs();
+        if (jobs.length > 0) {
+            renderJobs(jobs);
+        } else {
+            jobsList.innerHTML = getNoJobsLottie('No jobs available');
+        }
+    } catch (error) {
+        console.error('Error initializing page:', error);
+        jobsList.innerHTML = '<div class="error-message">Error loading jobs. Please try again later.</div>';
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Firebase Auth state listener
+    firebase.auth().onAuthStateChanged(async function(user) {
+        if (user) {
+            console.log('User is signed in:', user.uid);
+            if (!hasRedirected) {
+                await initializePage();
+                setupUserMenu();
+                initializeTheme();
+                updateUserProfileUI(user);
+            }
+        } else if (!hasRedirected && fromPage !== 'auth') {
+            hasRedirected = true;
+            console.log('No user is signed in');
+            window.location.href = '../Auth/auth.html?from=jobs';
+        }
+    });
+
+    // Setup logout functionality
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            handleLogout();
+        });
+    }
+    
+    // Add search event listeners
+    if (searchButton) {
+        searchButton.addEventListener('click', handleSearch);
+    }
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch(e);
+            }
+        });
+    }
+
+    // Add filter change listeners
+    filterInputs.forEach(input => {
+        input.addEventListener('change', async () => {
+            const jobs = await fetchJobs();
+            const filteredJobs = filterJobs(jobs);
+            renderJobs(filteredJobs);
+        });
+    });
+
+    // Set up filter toggle
+    if (filterToggleBtn) {
+        filterToggleBtn.addEventListener('click', toggleFilters);
+    }
+    if (filterCloseBtn) {
+        filterCloseBtn.addEventListener('click', hideFilters);
+    }
+
+    // Set up menu
+    if (mainBtn) {
+        mainBtn.addEventListener('click', toggleMenu);
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (menuItems && !menuItems.contains(e.target) && !mainBtn.contains(e.target)) {
+            menuItems.classList.remove('active');
+        }
+    });
+
+    // Update menu links
+    const menuLinks = document.querySelectorAll('.menu-item');
+    menuLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && !href.includes('?')) {
+            link.setAttribute('href', `${href}?from=jobs`);
+        }
+    });
+});
 
 // Render jobs to the page
 async function renderJobs(jobs) {
@@ -469,25 +575,61 @@ function filterJobs(jobs = allJobs) {
     return filteredJobs;
 }
 
-// Function to initialize the page
-async function initializePage() {
-    if (isInitialized) {
-        console.log('Page already initialized, skipping...');
+// Function to setup user menu
+function setupUserMenu() {
+    console.log('Setting up user menu');
+    const userMenuBtn = document.getElementById('user-menu-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+
+    if (!userMenuBtn || !userDropdown) {
+        console.error('User menu elements not found:', {
+            userMenuBtn: !!userMenuBtn,
+            userDropdown: !!userDropdown
+        });
         return;
     }
 
-    try {
-        isInitialized = true;
-        const jobs = await fetchJobs();
-        if (jobs.length > 0) {
-            renderJobs(jobs);
-        } else {
-            jobsList.innerHTML = getNoJobsLottie('No jobs available');
+    console.log('Found menu elements');
+
+    // Remove any existing listeners first
+    const newUserMenuBtn = userMenuBtn.cloneNode(true);
+    userMenuBtn.parentNode.replaceChild(newUserMenuBtn, userMenuBtn);
+
+    // Add click handler to the button
+    newUserMenuBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Menu button clicked');
+        userDropdown.classList.toggle('show');
+        console.log('Dropdown visibility:', userDropdown.classList.contains('show'));
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (userDropdown.classList.contains('show') && 
+            !userDropdown.contains(e.target) && 
+            !newUserMenuBtn.contains(e.target)) {
+            userDropdown.classList.remove('show');
+            console.log('Closing dropdown from outside click');
         }
-    } catch (error) {
-        console.error('Error initializing page:', error);
-        jobsList.innerHTML = '<div class="error-message">Error loading jobs. Please try again later.</div>';
-    }
+    });
+
+    // Close dropdown when pressing escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && userDropdown.classList.contains('show')) {
+            userDropdown.classList.remove('show');
+            console.log('Closing dropdown from escape key');
+        }
+    });
+
+    // Update menu links to include source page parameter
+    const menuLinks = document.querySelectorAll('.menu-item');
+    menuLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && !href.includes('?')) {
+            link.setAttribute('href', `${href}?from=jobs`);
+        }
+    });
 }
 
 // Handle search
@@ -546,102 +688,6 @@ async function handleSearch(event) {
         jobsList.innerHTML = '<div class="error-message">Error loading jobs. Please try again later.</div>';
     }
 }
-
-// Function to setup user menu
-function setupUserMenu() {
-    console.log('Setting up user menu');
-    const userMenuBtn = document.getElementById('user-menu-btn');
-    const userDropdown = document.getElementById('user-dropdown');
-
-    if (!userMenuBtn || !userDropdown) {
-        console.error('User menu elements not found:', {
-            userMenuBtn: !!userMenuBtn,
-            userDropdown: !!userDropdown
-        });
-        return;
-    }
-
-    console.log('Found menu elements');
-
-    // Remove any existing listeners first
-    const newUserMenuBtn = userMenuBtn.cloneNode(true);
-    userMenuBtn.parentNode.replaceChild(newUserMenuBtn, userMenuBtn);
-
-    // Add click handler to the button
-    newUserMenuBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Menu button clicked');
-        userDropdown.classList.toggle('show');
-        console.log('Dropdown visibility:', userDropdown.classList.contains('show'));
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (userDropdown.classList.contains('show') && 
-            !userDropdown.contains(e.target) && 
-            !newUserMenuBtn.contains(e.target)) {
-            userDropdown.classList.remove('show');
-            console.log('Closing dropdown from outside click');
-        }
-    });
-
-    // Close dropdown when pressing escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && userDropdown.classList.contains('show')) {
-            userDropdown.classList.remove('show');
-            console.log('Closing dropdown from escape key');
-        }
-    });
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded - Setting up user menu');
-    setupUserMenu();
-    
-    // Initialize Firebase Auth state listener
-    firebase.auth().onAuthStateChanged(async function(user) {
-        if (user) {
-            console.log('User is signed in:', user.uid);
-            updateUserProfileUI(user);
-        } else {
-            console.log('No user is signed in');
-            updateUserProfileUI(null);
-        }
-        await initializePage();
-    });
-
-    // Setup logout functionality
-    const logoutLink = document.getElementById('logout-link');
-    if (logoutLink) {
-        logoutLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            handleLogout();
-        });
-    }
-    
-    // Add search event listeners
-    if (searchButton) {
-        searchButton.addEventListener('click', handleSearch);
-    }
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleSearch(e);
-            }
-        });
-    }
-
-    // Add filter change listeners
-    filterInputs.forEach(input => {
-        input.addEventListener('change', async () => {
-            const jobs = await fetchJobs();
-            const filteredJobs = filterJobs(jobs);
-            renderJobs(filteredJobs);
-        });
-    });
-});
 
 // Function to get initials from a name
 function getInitials(name) {
@@ -773,67 +819,6 @@ document.addEventListener('click', (e) => {
         !menuItems.contains(e.target) && 
         !mainBtn.contains(e.target)) {
         toggleMenu();
-    }
-});
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Add event listeners for all filter inputs
-    const filterInputs = document.querySelectorAll('.filters-sidebar input, .filters-sidebar select');
-    filterInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            const filteredJobs = filterJobs();
-            if (filteredJobs.length === 0) {
-                jobsList.innerHTML = getNoJobsLottie('No jobs match your filter criteria');
-            } else {
-                renderJobs(filteredJobs);
-            }
-        });
-    });
-
-    // Add event listener for location input
-    const locationInput = document.querySelector('input[placeholder="City, state, or zip code"]');
-    let debounceTimeout;
-    locationInput.addEventListener('input', () => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-            const filteredJobs = filterJobs();
-            if (filteredJobs.length === 0) {
-                jobsList.innerHTML = getNoJobsLottie('No jobs match your filter criteria');
-            } else {
-                renderJobs(filteredJobs);
-            }
-        }, 300);
-    });
-
-    const applyFiltersBtn = document.querySelector('.filter-button.apply');
-    const resetFiltersBtn = document.querySelector('.filter-button.reset');
-    
-    if (applyFiltersBtn) {
-        applyFiltersBtn.addEventListener('click', () => {
-            const filteredJobs = filterJobs(allJobs);
-            if (filteredJobs.length === 0) {
-                jobsList.innerHTML = getNoJobsLottie('No jobs match your filters');
-            } else {
-                renderJobs(filteredJobs);
-            }
-            hideFilters(); // Hide the filter sidebar after applying
-        });
-    }
-    
-    if (resetFiltersBtn) {
-        resetFiltersBtn.addEventListener('click', () => {
-            // Reset all filters
-            document.querySelector('input[placeholder="City, state, or zip code"]').value = '';
-            document.querySelectorAll('.filters-sidebar input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            document.querySelector('.filter-group select').value = 'Any';
-            
-            // Show all jobs
-            renderJobs(allJobs);
-            hideFilters(); // Hide the filter sidebar after resetting
-        });
     }
 });
 

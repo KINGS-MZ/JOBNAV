@@ -132,22 +132,33 @@ body.dark-mode #theme-toggle:hover {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
     background: none;
     border: none;
-    color: inherit;
-    font-size: 0.95rem;
+    color: var(--light-text);
     cursor: pointer;
-    border-radius: 9999px;
-    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 50px;
+    transition: background-color 0.2s;
 }
 
-body.light-mode .user-btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+.user-btn:hover {
+    background-color: var(--light-hover);
 }
 
-body.dark-mode .user-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-blue);
+}
+
+.dark-mode .user-btn {
+    color: var(--dark-text);
+}
+
+.dark-mode .user-btn:hover {
+    background-color: var(--dark-hover);
 }
 
 .dropdown-menu {
